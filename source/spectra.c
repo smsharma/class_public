@@ -2128,6 +2128,10 @@ int spectra_indices(
 
   /* indices for species associated with a velocity transfer function in Fourier space */
 
+  class_define_index(psp->index_tr_chi,ppt->has_perturbed_recombination,index_tr,1);
+
+  /* indices for species associated with a velocity transfer function in Fourier space */
+
   class_define_index(psp->index_tr_theta_g,ppt->has_source_theta_g,index_tr,1);
   class_define_index(psp->index_tr_theta_b,ppt->has_source_theta_b,index_tr,1);
   class_define_index(psp->index_tr_theta_cdm,ppt->has_source_theta_cdm,index_tr,1);
@@ -3606,6 +3610,20 @@ int spectra_matter_transfers(
 
         rho_plus_p_tot += rho_i;
 
+        /* T_x_e */
+
+        if (ppt->has_perturbed_recombination == _TRUE_) {
+
+          // delta_i = ppt->sources[index_md]
+          //   [index_ic * ppt->tp_size[index_md] + ppt->index_tp_perturbed_recombination_delta_chi]
+          //   [(index_tau-psp->ln_tau_size+ppt->tau_size) * ppt->k_size[index_md] + index_k];
+
+          // psp->matter_transfer[((index_tau*psp->ln_k_size + index_k) * psp->ic_size[index_md] + index_ic) * psp->tr_size + psp->index_tr_chi] = delta_i;
+
+          // delta_rho_tot += rho_i * delta_i;
+
+        }
+
         /* T_cdm(k,tau) */
 
         if (pba->has_cdm == _TRUE_) {
@@ -4006,6 +4024,9 @@ int spectra_output_tk_titles(struct background *pba,
       class_store_columntitle(titles,"eta",ppt->has_source_eta);
       class_store_columntitle(titles,"eta_prime",ppt->has_source_eta_prime);
     }
+    if (ppt->has_perturbed_recombination == _TRUE_) {
+      class_store_columntitle(titles,"d_chi",_TRUE_);
+    }
     if (ppt->has_velocity_transfers == _TRUE_) {
       class_store_columntitle(titles,"t_g",_TRUE_);
       class_store_columntitle(titles,"t_b",_TRUE_);
@@ -4138,6 +4159,9 @@ int spectra_output_tk_data(
           class_store_double(dataptr,tk[psp->index_tr_h_prime],ppt->has_source_h_prime,storeidx);
           class_store_double(dataptr,tk[psp->index_tr_eta],ppt->has_source_eta,storeidx);
           class_store_double(dataptr,tk[psp->index_tr_eta_prime],ppt->has_source_eta_prime,storeidx);
+        }
+        if (ppt->has_perturbed_recombination == _TRUE_) {
+          class_store_double(dataptr,tk[psp->index_tr_chi],ppt->has_perturbed_recombination,storeidx);
         }
         if (ppt->has_velocity_transfers == _TRUE_) {
 

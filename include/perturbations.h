@@ -310,6 +310,8 @@ struct perturbs
   int index_tp_eta;          /**< index value for metric fluctuation eta */
   int index_tp_eta_prime;    /**< index value for metric fluctuation eta' */
 
+  int index_tp_chi;          /**< index value for chi perturbations' */
+
   int * tp_size; /**< number of types tp_size[index_md] included in computation for each mode */
 
   //@}

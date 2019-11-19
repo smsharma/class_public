@@ -788,6 +788,7 @@ int perturb_indices_of_perturbs(
       class_define_index(ppt->index_tp_h_prime,    ppt->has_source_h_prime,   index_type,1);
       class_define_index(ppt->index_tp_eta,        ppt->has_source_eta,       index_type,1);
       class_define_index(ppt->index_tp_eta_prime,  ppt->has_source_eta_prime, index_type,1);
+      class_define_index(ppt->index_tp_perturbed_recombination_delta_chi, ppt->has_perturbed_recombination, index_type,1);
       ppt->tp_size[index_md] = index_type;
 
       class_test(index_type == 0,
@@ -6198,6 +6199,15 @@ int perturb_sources(
       }
     }
 
+    /* delta_chi */
+    if (ppt->has_perturbed_recombination == _TRUE_) {
+      // fprintf(stderr,"%f",y[ppw->pv->index_pt_perturbed_recombination_delta_chi]);
+      // fprintf(stderr,"\n");
+      _set_source_(ppt->index_tp_perturbed_recombination_delta_chi) = y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
+    }
+
+
+
     /* total velocity (gauge-invariant, defined as in arXiv:1307.1459) */
     if (ppt->has_source_theta_m == _TRUE_) {
       _set_source_(ppt->index_tp_theta_m) = ppw->theta_m;
@@ -6447,6 +6457,10 @@ int perturb_print_variables(double tau,
   if ((ppt->has_perturbed_recombination == _TRUE_) && (ppw->approx[ppw->index_ap_tca] == (int)tca_off) ){
     delta_temp = y[ppw->pv->index_pt_perturbed_recombination_delta_temp];
     delta_chi =y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
+    fprintf(stdout, "halooo");
+    fprintf(stdout,"%f",delta_chi);
+    fprintf(stdout,"\n");
+
   }
   /** - for scalar modes */
   if (_scalars_) {
@@ -6502,6 +6516,14 @@ int perturb_print_variables(double tau,
 
     delta_b = y[ppw->pv->index_pt_delta_b];
     theta_b = y[ppw->pv->index_pt_theta_b];
+
+    if (ppt->has_perturbed_recombination == _TRUE_) {
+      delta_chi = y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
+      fprintf(stdout, "halooo");
+      fprintf(stdout,"%f",delta_chi);
+      fprintf(stdout,"\n");
+
+    }
 
     if (pba->has_cdm == _TRUE_) {
 
@@ -7043,6 +7065,10 @@ int perturb_derivs(double tau,
 
       delta_temp= y[ppw->pv->index_pt_perturbed_recombination_delta_temp];
       delta_chi= y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
+        fprintf(stdout, "haloooss");
+      fprintf(stdout,"%f",delta_chi);
+      fprintf(stdout,"\n");
+
       chi=pvecthermo[pth->index_th_xe];
 
       // Conversion of H0 in inverse seconds (pba->H0 is [H0/c] in inverse Mpcs)
@@ -7973,6 +7999,7 @@ int perturb_tca_slip_and_shear(double * y,
 
   /* perturbed recombination */
   double delta_temp=0.;
+  double delta_chi=0.;
 
   /* for use with curvature */
   double s2_squared;
@@ -8016,6 +8043,7 @@ int perturb_tca_slip_and_shear(double * y,
   /* perturbed recombination */
   if ((ppt->has_perturbed_recombination == _TRUE_) && (ppw->approx[ppw->index_ap_tca] == (int)tca_off) ){
     delta_temp = y[pv->index_pt_perturbed_recombination_delta_temp];
+    delta_chi = y[pv->index_pt_perturbed_recombination_delta_chi];
   }
 
   /** - --> (b) define short-cut notations used only in tight-coupling approximation */
