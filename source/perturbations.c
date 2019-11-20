@@ -2379,10 +2379,10 @@ int perturb_solve(
     if (ppt->index_k_output_values[index_md*ppt->k_output_values_num+index_ikout] == index_k){
       ppw->index_ikout = index_ikout;
       perhaps_print_variables = perturb_print_variables;
-      class_call(perturb_prepare_output_file(
-         pba,ppt,ppw,index_ikout,index_md),
-         ppt->error_message,
-         ppt->error_message);
+      // class_call(perturb_prepare_output_file(
+      //    pba,ppt,ppw,index_ikout,index_md),
+      //    ppt->error_message,
+      //    ppt->error_message);
       
     }
   }
@@ -6149,10 +6149,11 @@ int perturb_sources(
       _set_source_(ppt->index_tp_delta_b) = y[ppw->pv->index_pt_delta_b];
     }
 
-    // /* delta_baryon */
-    // if (ppt->has_perturbed_recombination == _TRUE_) {
-    //   _set_source_(ppt->index_tp_perturbed_recombination_delta_chi) = y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
-    // }
+    /* delta_chi */ // Added by smsharma
+    if ((ppt->has_perturbed_recombination == _TRUE_)&&(ppw->approx[ppw->index_ap_tca]==(int)tca_off))
+    {
+      _set_source_(ppt->index_tp_perturbed_recombination_delta_chi) = y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
+    }
 
     /* delta_cdm */
     if (ppt->has_source_delta_cdm == _TRUE_) {
@@ -6454,11 +6455,7 @@ int perturb_print_variables(double tau,
 
   if ((ppt->has_perturbed_recombination == _TRUE_) && (ppw->approx[ppw->index_ap_tca] == (int)tca_off) ){
     delta_temp = y[ppw->pv->index_pt_perturbed_recombination_delta_temp];
-    delta_chi =y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
-      // fprintf(stdout,"2");
-      // fprintf(stdout,"%f",delta_chi);
-      // fprintf(stdout,"\n");
-
+    delta_chi = y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
   }
   /** - for scalar modes */
   if (_scalars_) {
@@ -7055,10 +7052,6 @@ int perturb_derivs(double tau,
 
       delta_temp= y[ppw->pv->index_pt_perturbed_recombination_delta_temp];
       delta_chi= y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
-
-      // fprintf(stdout,"1");
-      // fprintf(stdout,"%f",delta_chi);
-      // fprintf(stdout,"\n");
 
       chi=pvecthermo[pth->index_th_xe];
 

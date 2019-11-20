@@ -252,7 +252,7 @@ struct spectra {
   int index_tr_h_prime;        /**< index of synchronous gauge metric perturbation h' */
   int index_tr_eta;            /**< index of synchronous gauge metric perturbation eta */
   int index_tr_eta_prime;      /**< index of synchronous gauge metric perturbation eta' */
-  int index_tr_delta_chi;            /**< index of synchronous gauge metric perturbation chi' */  
+  int index_tr_delta_chi;      /**< index of synchronous gauge metric perturbation chi' */  // Added by smsharma
   int tr_size;                 /**< total number of species in transfer functions */
 
   double * matter_transfer;   /**< Matter transfer functions.

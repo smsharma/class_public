@@ -2110,7 +2110,7 @@ int spectra_indices(
   index_tr=0;
   class_define_index(psp->index_tr_delta_g,ppt->has_source_delta_g,index_tr,1);
   class_define_index(psp->index_tr_delta_b,ppt->has_source_delta_b,index_tr,1);
-  class_define_index(psp->index_tr_delta_chi,ppt->has_perturbed_recombination,index_tr,1);
+  class_define_index(psp->index_tr_delta_chi,ppt->has_perturbed_recombination,index_tr,1);  // Added by smsharma
   class_define_index(psp->index_tr_delta_cdm,ppt->has_source_delta_cdm,index_tr,1);
   class_define_index(psp->index_tr_delta_dcdm,ppt->has_source_delta_dcdm,index_tr,1);
   class_define_index(psp->index_tr_delta_scf,ppt->has_source_delta_scf,index_tr,1);
@@ -3593,6 +3593,20 @@ int spectra_matter_transfers(
 
         rho_tot += rho_i;
 
+        /* T_chi(k,tau) */ // Added by smsharma
+
+        if (ppt->has_perturbed_recombination= _TRUE_) {
+
+          delta_i = ppt->sources[index_md]
+            [index_ic * ppt->tp_size[index_md] + ppt->index_tp_perturbed_recombination_delta_chi]
+            [(index_tau-psp->ln_tau_size+ppt->tau_size) * ppt->k_size[index_md] + index_k];
+
+          psp->matter_transfer[((index_tau*psp->ln_k_size + index_k) * psp->ic_size[index_md] + index_ic) * psp->tr_size + psp->index_tr_delta_chi] = delta_i;
+
+          // delta_rho_tot += rho_i * delta_i; // TODO: [smsharma] I'm not sure if this should be commented out or left in. I think left out, since this isn't a perturbation on top of the baryon background... but is there a free electron backround we should be considering? Confused.
+
+        }
+        
         if (ppt->has_source_theta_b == _TRUE_) {
 
           theta_i = ppt->sources[index_md]
@@ -3986,7 +4000,7 @@ int spectra_output_tk_titles(struct background *pba,
     if (ppt->has_density_transfers == _TRUE_) {
       class_store_columntitle(titles,"d_g",_TRUE_);
       class_store_columntitle(titles,"d_b",_TRUE_);
-      class_store_columntitle(titles,"d_chi",ppt->has_perturbed_recombination);
+      class_store_columntitle(titles,"d_chi",ppt->has_perturbed_recombination); // Added by smsharma
       class_store_columntitle(titles,"d_cdm",pba->has_cdm);
       class_store_columntitle(titles,"d_fld",pba->has_fld);
       class_store_columntitle(titles,"d_ur",pba->has_ur);
@@ -4030,7 +4044,7 @@ int spectra_output_tk_titles(struct background *pba,
   else if (output_format == camb_format) {
 
     class_store_columntitle(titles,"k (h/Mpc)",_TRUE_);
-    class_store_columntitle(titles,"-T_cdm/k2",_TRUE_);
+    class_store_columntitle(titles,"-T_cdm/k2",_TRUE_);  // Added by smsharma
     class_store_columntitle(titles,"-T_b/k2",_TRUE_);
     class_store_columntitle(titles,"-T_chi/k2",_TRUE_);
     class_store_columntitle(titles,"-T_g/k2",_TRUE_);
