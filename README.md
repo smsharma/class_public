@@ -9,6 +9,16 @@ Montanari, etc.
 
 For download and information, see http://class-code.net
 
+Modifications
+-----------------------------------
+
+The only changes in this fork are, when the perturbed recombination 
+option is turned on (`perturbed recombination = yes`), the output will 
+include the density spectrum of perturbation of the electron ionization
+fraction x_e (see [here](https://lesgourg.github.io/class_public/perturbed_recombination.pdf) for explanation).
+
+The x_e perturbation transfer function is output as `d_chi` (default format) 
+or `-T_chi/k2` (`CAMB` format).
 
 Compiling CLASS and getting started
 -----------------------------------
