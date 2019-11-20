@@ -788,7 +788,6 @@ int perturb_indices_of_perturbs(
       class_define_index(ppt->index_tp_h_prime,    ppt->has_source_h_prime,   index_type,1);
       class_define_index(ppt->index_tp_eta,        ppt->has_source_eta,       index_type,1);
       class_define_index(ppt->index_tp_eta_prime,  ppt->has_source_eta_prime, index_type,1);
-      class_define_index(ppt->index_tp_perturbed_recombination_delta_chi, ppt->has_perturbed_recombination, index_type,1);
       ppt->tp_size[index_md] = index_type;
 
       class_test(index_type == 0,
@@ -2375,16 +2374,16 @@ int perturb_solve(
   /** - check whether we need to print perturbations to a file for this wavenumber */
 
   perhaps_print_variables = NULL;
-  ppw->index_ikout = -1;
+  ppw->index_ikout = 0;
   for (index_ikout=0; index_ikout<ppt->k_output_values_num; index_ikout++){
     if (ppt->index_k_output_values[index_md*ppt->k_output_values_num+index_ikout] == index_k){
       ppw->index_ikout = index_ikout;
       perhaps_print_variables = perturb_print_variables;
-      /* class_call(perturb_prepare_output_file(
+      class_call(perturb_prepare_output_file(
          pba,ppt,ppw,index_ikout,index_md),
          ppt->error_message,
          ppt->error_message);
-      */
+      
     }
   }
 
@@ -3485,6 +3484,9 @@ int perturb_vector_init(
 
       ppv->y[ppv->index_pt_delta_b] =
         ppw->pv->y[ppw->pv->index_pt_delta_b];
+
+      // ppv->y[ppv->index_pt_perturbed_recombination_delta_chi] =
+      //   ppw->pv->y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
 
       ppv->y[ppv->index_pt_theta_b] =
         ppw->pv->y[ppw->pv->index_pt_theta_b];
@@ -6147,6 +6149,11 @@ int perturb_sources(
       _set_source_(ppt->index_tp_delta_b) = y[ppw->pv->index_pt_delta_b];
     }
 
+    // /* delta_baryon */
+    // if (ppt->has_perturbed_recombination == _TRUE_) {
+    //   _set_source_(ppt->index_tp_perturbed_recombination_delta_chi) = y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
+    // }
+
     /* delta_cdm */
     if (ppt->has_source_delta_cdm == _TRUE_) {
       _set_source_(ppt->index_tp_delta_cdm) = y[ppw->pv->index_pt_delta_cdm];
@@ -6198,15 +6205,6 @@ int perturb_sources(
         _set_source_(index_type) = ppw->delta_ncdm[index_type - ppt->index_tp_delta_ncdm1];
       }
     }
-
-    /* delta_chi */
-    if (ppt->has_perturbed_recombination == _TRUE_) {
-      // fprintf(stderr,"%f",y[ppw->pv->index_pt_perturbed_recombination_delta_chi]);
-      // fprintf(stderr,"\n");
-      _set_source_(ppt->index_tp_perturbed_recombination_delta_chi) = y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
-    }
-
-
 
     /* total velocity (gauge-invariant, defined as in arXiv:1307.1459) */
     if (ppt->has_source_theta_m == _TRUE_) {
@@ -6457,9 +6455,9 @@ int perturb_print_variables(double tau,
   if ((ppt->has_perturbed_recombination == _TRUE_) && (ppw->approx[ppw->index_ap_tca] == (int)tca_off) ){
     delta_temp = y[ppw->pv->index_pt_perturbed_recombination_delta_temp];
     delta_chi =y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
-    fprintf(stdout, "halooo");
-    fprintf(stdout,"%f",delta_chi);
-    fprintf(stdout,"\n");
+      // fprintf(stdout,"2");
+      // fprintf(stdout,"%f",delta_chi);
+      // fprintf(stdout,"\n");
 
   }
   /** - for scalar modes */
@@ -6516,14 +6514,6 @@ int perturb_print_variables(double tau,
 
     delta_b = y[ppw->pv->index_pt_delta_b];
     theta_b = y[ppw->pv->index_pt_theta_b];
-
-    if (ppt->has_perturbed_recombination == _TRUE_) {
-      delta_chi = y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
-      fprintf(stdout, "halooo");
-      fprintf(stdout,"%f",delta_chi);
-      fprintf(stdout,"\n");
-
-    }
 
     if (pba->has_cdm == _TRUE_) {
 
@@ -7065,9 +7055,10 @@ int perturb_derivs(double tau,
 
       delta_temp= y[ppw->pv->index_pt_perturbed_recombination_delta_temp];
       delta_chi= y[ppw->pv->index_pt_perturbed_recombination_delta_chi];
-        fprintf(stdout, "haloooss");
-      fprintf(stdout,"%f",delta_chi);
-      fprintf(stdout,"\n");
+
+      // fprintf(stdout,"1");
+      // fprintf(stdout,"%f",delta_chi);
+      // fprintf(stdout,"\n");
 
       chi=pvecthermo[pth->index_th_xe];
 
@@ -7999,7 +7990,6 @@ int perturb_tca_slip_and_shear(double * y,
 
   /* perturbed recombination */
   double delta_temp=0.;
-  double delta_chi=0.;
 
   /* for use with curvature */
   double s2_squared;
@@ -8043,7 +8033,6 @@ int perturb_tca_slip_and_shear(double * y,
   /* perturbed recombination */
   if ((ppt->has_perturbed_recombination == _TRUE_) && (ppw->approx[ppw->index_ap_tca] == (int)tca_off) ){
     delta_temp = y[pv->index_pt_perturbed_recombination_delta_temp];
-    delta_chi = y[pv->index_pt_perturbed_recombination_delta_chi];
   }
 
   /** - --> (b) define short-cut notations used only in tight-coupling approximation */

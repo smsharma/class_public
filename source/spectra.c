@@ -2110,6 +2110,7 @@ int spectra_indices(
   index_tr=0;
   class_define_index(psp->index_tr_delta_g,ppt->has_source_delta_g,index_tr,1);
   class_define_index(psp->index_tr_delta_b,ppt->has_source_delta_b,index_tr,1);
+  class_define_index(psp->index_tr_delta_chi,ppt->has_perturbed_recombination,index_tr,1);
   class_define_index(psp->index_tr_delta_cdm,ppt->has_source_delta_cdm,index_tr,1);
   class_define_index(psp->index_tr_delta_dcdm,ppt->has_source_delta_dcdm,index_tr,1);
   class_define_index(psp->index_tr_delta_scf,ppt->has_source_delta_scf,index_tr,1);
@@ -2125,10 +2126,6 @@ int spectra_indices(
   class_define_index(psp->index_tr_h_prime,ppt->has_source_h_prime,index_tr,1);
   class_define_index(psp->index_tr_eta,ppt->has_source_eta,index_tr,1);
   class_define_index(psp->index_tr_eta_prime,ppt->has_source_eta_prime,index_tr,1);
-
-  /* indices for species associated with a velocity transfer function in Fourier space */
-
-  class_define_index(psp->index_tr_chi,ppt->has_perturbed_recombination,index_tr,1);
 
   /* indices for species associated with a velocity transfer function in Fourier space */
 
@@ -3610,20 +3607,6 @@ int spectra_matter_transfers(
 
         rho_plus_p_tot += rho_i;
 
-        /* T_x_e */
-
-        if (ppt->has_perturbed_recombination == _TRUE_) {
-
-          // delta_i = ppt->sources[index_md]
-          //   [index_ic * ppt->tp_size[index_md] + ppt->index_tp_perturbed_recombination_delta_chi]
-          //   [(index_tau-psp->ln_tau_size+ppt->tau_size) * ppt->k_size[index_md] + index_k];
-
-          // psp->matter_transfer[((index_tau*psp->ln_k_size + index_k) * psp->ic_size[index_md] + index_ic) * psp->tr_size + psp->index_tr_chi] = delta_i;
-
-          // delta_rho_tot += rho_i * delta_i;
-
-        }
-
         /* T_cdm(k,tau) */
 
         if (pba->has_cdm == _TRUE_) {
@@ -4003,6 +3986,7 @@ int spectra_output_tk_titles(struct background *pba,
     if (ppt->has_density_transfers == _TRUE_) {
       class_store_columntitle(titles,"d_g",_TRUE_);
       class_store_columntitle(titles,"d_b",_TRUE_);
+      class_store_columntitle(titles,"d_chi",ppt->has_perturbed_recombination);
       class_store_columntitle(titles,"d_cdm",pba->has_cdm);
       class_store_columntitle(titles,"d_fld",pba->has_fld);
       class_store_columntitle(titles,"d_ur",pba->has_ur);
@@ -4023,9 +4007,6 @@ int spectra_output_tk_titles(struct background *pba,
       class_store_columntitle(titles,"h_prime",ppt->has_source_h_prime);
       class_store_columntitle(titles,"eta",ppt->has_source_eta);
       class_store_columntitle(titles,"eta_prime",ppt->has_source_eta_prime);
-    }
-    if (ppt->has_perturbed_recombination == _TRUE_) {
-      class_store_columntitle(titles,"d_chi",_TRUE_);
     }
     if (ppt->has_velocity_transfers == _TRUE_) {
       class_store_columntitle(titles,"t_g",_TRUE_);
@@ -4051,6 +4032,7 @@ int spectra_output_tk_titles(struct background *pba,
     class_store_columntitle(titles,"k (h/Mpc)",_TRUE_);
     class_store_columntitle(titles,"-T_cdm/k2",_TRUE_);
     class_store_columntitle(titles,"-T_b/k2",_TRUE_);
+    class_store_columntitle(titles,"-T_chi/k2",_TRUE_);
     class_store_columntitle(titles,"-T_g/k2",_TRUE_);
     class_store_columntitle(titles,"-T_ur/k2",_TRUE_);
     class_store_columntitle(titles,"-T_ncdm/k2",_TRUE_);
@@ -4140,6 +4122,7 @@ int spectra_output_tk_data(
 
           class_store_double(dataptr,tk[psp->index_tr_delta_g],ppt->has_source_delta_g,storeidx);
           class_store_double(dataptr,tk[psp->index_tr_delta_b],ppt->has_source_delta_b,storeidx);
+          class_store_double(dataptr,tk[psp->index_tr_delta_chi],ppt->has_perturbed_recombination,storeidx);
           class_store_double(dataptr,tk[psp->index_tr_delta_cdm],ppt->has_source_delta_cdm,storeidx);
           class_store_double(dataptr,tk[psp->index_tr_delta_fld],ppt->has_source_delta_fld,storeidx);
           class_store_double(dataptr,tk[psp->index_tr_delta_ur],ppt->has_source_delta_ur,storeidx);
@@ -4159,9 +4142,6 @@ int spectra_output_tk_data(
           class_store_double(dataptr,tk[psp->index_tr_h_prime],ppt->has_source_h_prime,storeidx);
           class_store_double(dataptr,tk[psp->index_tr_eta],ppt->has_source_eta,storeidx);
           class_store_double(dataptr,tk[psp->index_tr_eta_prime],ppt->has_source_eta_prime,storeidx);
-        }
-        if (ppt->has_perturbed_recombination == _TRUE_) {
-          class_store_double(dataptr,tk[psp->index_tr_chi],ppt->has_perturbed_recombination,storeidx);
         }
         if (ppt->has_velocity_transfers == _TRUE_) {
 
@@ -4188,6 +4168,7 @@ int spectra_output_tk_data(
         /* rescale and reorder the matter transfer functions following the CMBFAST/CAMB convention */
         class_store_double_or_default(dataptr,-tk[psp->index_tr_delta_cdm]/k2,ppt->has_source_delta_cdm,storeidx,0.0);
         class_store_double_or_default(dataptr,-tk[psp->index_tr_delta_b]/k2,ppt->has_source_delta_b,storeidx,0.0);
+        class_store_double_or_default(dataptr,-tk[psp->index_tr_delta_chi]/k2,ppt->has_perturbed_recombination,storeidx,0.0);
         class_store_double_or_default(dataptr,-tk[psp->index_tr_delta_g]/k2,ppt->has_source_delta_g,storeidx,0.0);
         class_store_double_or_default(dataptr,-tk[psp->index_tr_delta_ur]/k2,ppt->has_source_delta_ur,storeidx,0.0);
         class_store_double_or_default(dataptr,-tk[psp->index_tr_delta_ncdm1]/k2,ppt->has_source_delta_ncdm,storeidx,0.0);
